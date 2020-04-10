@@ -1,4 +1,4 @@
-FROM zoneminderhq/zoneminder
+FROM zoneminderhq/zoneminder:latest-ubuntu18.04
 
 # Install zm event notification server
 RUN apt-get update \
