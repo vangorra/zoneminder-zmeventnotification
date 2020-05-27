@@ -1,6 +1,6 @@
 name: Build
 
-on: [pull_request]
+on: [push]
 
 jobs:
   build:
@@ -11,6 +11,8 @@ jobs:
         include:
           - cuda-version: "none"
             image-tags: "cpu,latest"
+          - cuda-version: "5.0"
+            tags: "gpu-cuda-5.0"
     steps:
       - uses: actions/checkout@v1
       - name: Build and push Docker images
@@ -22,4 +24,4 @@ jobs:
           repository: vangorra/myrepository
           add_git_labels: true
           tags: ${{ matrix.tags }}
-          push: false
+          push: true
