@@ -24,4 +24,4 @@ jobs:
           repository: vangorra/myrepository
           add_git_labels: true
           tags: ${{ matrix.tags }}
-          push: ${{ github.event_name == "push" }}
+          push: ${{ github.event_name == 'push' }}
