@@ -1,6 +1,8 @@
 FROM zoneminderhq/zoneminder:latest-ubuntu18.04
 ARG CUDA_VERSION="none"
-ARG BUILD_DEPS="curl wget git build-essential cmake python-dev python3-dev python3-pip libopenblas-dev liblapack-dev libblas-dev libsm-dev nvidia-cuda-dev zlib1g-dev libjpeg8-dev libtiff5-dev libpng-dev"
+ARG BUILD_DEPS="curl wget git build-essential cmake python-dev python3-dev python3-pip libopenblas-dev liblapack-dev libblas-dev libsm-dev zlib1g-dev libjpeg8-dev libtiff5-dev libpng-dev"
+ARG CUDA_DEPS="nvidia-cuda-toolkit"
+ARG CUDA_BUILD_DEPS="nvidia-cuda-dev"
 
 # Install dependencies.
 RUN apt-get update \
@@ -22,7 +24,8 @@ RUN apt-get update \
         libsm6 \
         libxrender1 \
         libfontconfig1 \
-        nvidia-cuda-toolkit \
+        $([ "$CUDA_VERSION" = 'none' ] && echo -n "" || echo -n $CUDA_DEPS) \
+        $([ "$CUDA_VERSION" = 'none' ] && echo -n "" || echo -n $CUDA_BUILD_DEPS) \
         $BUILD_DEPS \
     && curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
     && python /tmp/get-pip.py \
@@ -42,12 +45,12 @@ RUN git clone https://github.com/opencv/opencv.git /tmp/opencv \
        	-DOPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib/modules \
        	-DINSTALL_C_EXAMPLES=OFF \
        	-DOPENCV_ENABLE_NONFREE=ON \
-       	-DWITH_CUDA=$([ "$CUDA_VERSION" == "none" ] && echo "OFF" || echo "ON") \
-       	-DWITH_CUDNN=$([ "$CUDA_VERSION" == "none" ] && echo "OFF" || echo "ON") \
-       	-DOPENCV_DNN_CUDA=$([ "$CUDA_VERSION" == "none" ] && echo "OFF" || echo "ON") \
-       	-DENABLE_FAST_MATH=$([ "$CUDA_VERSION" == "none" ] && echo "OFF" || echo "ON") \
-       	-DCUDA_FAST_MATH=$([ "$CUDA_VERSION" == "none" ] && echo "OFF" || echo "ON") \
-       	-DWITH_CUBLAS=$([ "$CUDA_VERSION" == "none" ] && echo "OFF" || echo "ON") \
+       	-DWITH_CUDA=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
+       	-DWITH_CUDNN=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
+       	-DOPENCV_DNN_CUDA=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
+       	-DENABLE_FAST_MATH=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
+       	-DCUDA_FAST_MATH=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
+       	-DWITH_CUBLAS=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
        	-DCUDA_ARCH_BIN=$CUDA_VERSION \
        	-DBUILD_opencv_python2=ON \
        	-DBUILD_opencv_python3=ON \
@@ -74,6 +77,6 @@ RUN git clone https://github.com/pliablepixels/zmeventnotification.git \
     && chown www-data /var/lib/zmeventnotification/push/ -R
 
 # Cleanup
-RUN apt-get --assume-yes remove $BUILD_DEPS \
+RUN apt-get --assume-yes remove $BUILD_DEPS $CUDA_BUILD_DEPS \
     && apt-get --assume-yes autoremove \
     && rm -rf /var/lib/apt/lists/*

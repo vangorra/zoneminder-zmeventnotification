@@ -11,8 +11,8 @@ jobs:
         include:
           - cuda-version: "none"
             image-tags: "cpu,latest"
-          - cuda-version: "5.0"
-            tags: "gpu-cuda-5.0"
+          - cuda-version: "3.0"
+            tags: "gpu-cuda-3.0"
     steps:
       - uses: actions/checkout@v1
       - name: Build and push Docker images
