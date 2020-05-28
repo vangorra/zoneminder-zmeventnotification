@@ -1,4 +1,4 @@
-name: Build
+name: Publish
 
 on: [push]
 
@@ -21,7 +21,7 @@ jobs:
           build_args: CUDA_VERSION=${{ matrix.cuda-version }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: vangorra/myrepository
+          repository: vangorra/zoneminder-zmeventnotification
           add_git_labels: true
           tags: ${{ matrix.tags }}
           push: true
