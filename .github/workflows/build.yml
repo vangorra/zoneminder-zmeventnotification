@@ -11,15 +11,12 @@ jobs:
         include:
           - cuda-version: "none"
             image-tags: "cpu,latest"
+          - cuda-version: "3.0"
+            tags: "gpu-cuda-3.0"
     steps:
       - uses: actions/checkout@v1
-      - name: Build and push Docker images
+      - name: Build Docker images
         uses: docker/build-push-action@v1.1.0
         with:
           build_args: CUDA_VERSION=${{ matrix.cuda-version }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: vangorra/zoneminder-zmeventnotification
-          add_git_labels: true
-          tags: ${{ matrix.tags }}
           push: false
