@@ -10,7 +10,7 @@ jobs:
       matrix:
         include:
           - cuda-version: "none"
-            image-tags: "cpu,latest"
+            image-tags: "cpu"
           - cuda-version: "3.0"
             tags: "gpu-cuda-3.0"
     steps:
