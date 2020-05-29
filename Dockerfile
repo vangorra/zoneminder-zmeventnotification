@@ -21,6 +21,8 @@ RUN apt-get update \
         python3 \
         python3-pip \
         python3-numpy \
+        python-idna \
+        python3-idna \
         libsm6 \
         libxrender1 \
         libfontconfig1 \
@@ -30,7 +32,8 @@ RUN apt-get update \
     && curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
     && python /tmp/get-pip.py \
     && python3 -m pip install --upgrade pip \
-    && pip install future \
+    && pip install future idna \
+    && pip3 install future idna \
     && perl -MCPAN -e "install Net::WebSocket::Server" \
     && perl -MCPAN -e "install Net::MQTT::Simple"
 
