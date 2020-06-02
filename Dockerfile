@@ -1,8 +1,7 @@
 FROM zoneminderhq/zoneminder:latest-ubuntu18.04
 ARG CUDA_VERSION="none"
-ARG BUILD_DEPS="curl wget git build-essential cmake python-dev python3-dev python3-pip libopenblas-dev liblapack-dev libblas-dev libsm-dev zlib1g-dev libjpeg8-dev libtiff5-dev libpng-dev g++-6 gcc-6"
-ARG CUDA_DEPS="nvidia-cuda-toolkit"
-ARG CUDA_BUILD_DEPS="nvidia-cuda-dev"
+ARG BUILD_DEPS="curl wget git build-essential cmake python-dev python3-dev python3-pip libopenblas-dev liblapack-dev libblas-dev libsm-dev zlib1g-dev libjpeg8-dev libtiff5-dev libpng-dev"
+ARG CUDA_DEPS="nvidia-cuda-toolkit nvidia-cuda-dev"
 ARG BUILD_DIR="/tmp/build"
 
 # Install dependencies.
@@ -28,8 +27,7 @@ RUN mkdir -p "$BUILD_DIR" \
         libsm6 \
         libxrender1 \
         libfontconfig1 \
-        $([ "$CUDA_VERSION" = 'none' ] && echo -n "" || echo -n $CUDA_DEPS) \
-        $([ "$CUDA_VERSION" = 'none' ] && echo -n "" || echo -n $CUDA_BUILD_DEPS) \
+        $([ "$CUDA_VERSION" = 'none' ] && echo -n "" || echo -n "$CUDA_DEPS") \
         $BUILD_DEPS \
     && curl "https://bootstrap.pypa.io/get-pip.py" -o "$BUILD_DIR/get-pip.py" \
     && python "$BUILD_DIR/get-pip.py" \
@@ -82,7 +80,6 @@ RUN git clone "https://github.com/pliablepixels/zmeventnotification.git" \
     && chown www-data /var/lib/zmeventnotification/push/ -R
 
 # Cleanup
-RUN apt-get --assume-yes remove $BUILD_DEPS $CUDA_BUILD_DEPS \
-    && apt-get --assume-yes autoremove \
+RUN apt-get --assume-yes remove $BUILD_DEPS \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf "$BUILD_DIR"
