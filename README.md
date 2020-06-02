@@ -1,11 +1,12 @@
 # zoneminder-zmeventnotification [![Build status](https://github.com/vangorra/zoneminder-zmeventnotification/workflows/Build/badge.svg?branch=master)](https://github.com/vangorra/zoneminder-zmeventnotification/actions?workflow=Build)
-A docker container prebuilt for zoneminder and zmeventnotification. This is built on top of the official zoneminder docker image.
+A docker container prebuilt for zoneminder and zmeventnotification that supports CPU or GPU image processing. This is built on top of the official zoneminder docker image.
 
 ## Features
 
-- Built from official docker image.
+- Built from official zoneminder docker image.
 - Custom OpenCV build.
 - CPU and Nvidia GPU support. [Full tag list here](https://hub.docker.com/repository/docker/vangorra/zoneminder-zmeventnotification/tags).
+  - Is your CUDA version not listed in the docker tags? File and issue requesting the version or submit a PR that adjusts the matrix of `.github/workflows/build.yml`.
 
 ## Usage
 OpenCV CPU processing:
@@ -114,11 +115,11 @@ The model from the previous step is `Quadro K600`. Find the CUDA version for you
 https://developer.nvidia.com/cuda-gpus
 
 - Use the tag for your docker container.
-The previous step reports the CUDA version for the `Quadro K600` is `3.0`. So the image we will use is vangorra/zoneminder-zmeventnotification:gpu-cuda-3.0.
+The previous step reports the CUDA version for the `Quadro K600` is `3.0`. So the image we will use is `vangorra/zoneminder-zmeventnotification:gpu-cuda-3.0`.
 Adjust your image accordinly.
 
 ## Event Notification Configs
-Configuration for this project is well documented here: https://github.com/pliablepixels/zmeventnotification.
+Configuration for this zmeventnotification is well documented here: https://zmeventnotification.readthedocs.io/ and https://github.com/pliablepixels/zmeventnotification.
 
 Config files can be located here:
 - https://github.com/pliablepixels/zmeventnotification/blob/master/zmeventnotification.ini
