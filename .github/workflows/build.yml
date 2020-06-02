@@ -24,4 +24,4 @@ jobs:
           repository: vangorra/zoneminder-zmeventnotification
           add_git_labels: true
           tags: ${{ matrix.tags }}
-          push: ${{ github.event.ref == "refs/heads/master" }}
+          push: ${{ github.event.ref == 'refs/heads/master' }}
