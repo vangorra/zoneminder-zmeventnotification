@@ -1,7 +1,7 @@
 FROM zoneminderhq/zoneminder:latest-ubuntu18.04
 ARG CUDA_VERSION="none"
 ARG BUILD_DEPS="curl wget git build-essential cmake python-dev python3-dev python3-pip libopenblas-dev liblapack-dev libblas-dev libsm-dev zlib1g-dev libjpeg8-dev libtiff5-dev libpng-dev"
-ARG CUDA_DEPS="nvidia-cuda-toolkit nvidia-cuda-dev"
+ARG CUDA_DEPS="nvidia-cuda-toolkit nvidia-cuda-dev g++-6 gcc-6"
 ARG BUILD_DIR="/tmp/build"
 
 # Install dependencies.
