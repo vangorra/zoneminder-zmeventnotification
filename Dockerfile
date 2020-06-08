@@ -3,6 +3,7 @@ ARG CUDA_VERSION="none"
 ARG BUILD_DEPS="curl wget git build-essential cmake python-dev python3-dev python3-pip libopenblas-dev liblapack-dev libblas-dev libsm-dev zlib1g-dev libjpeg8-dev libtiff5-dev libpng-dev"
 ARG CUDA_DEPS="nvidia-cuda-toolkit nvidia-cuda-dev"
 ARG BUILD_DIR="/tmp/build"
+ARG TEST_DIR="/tmp/test"
 
 # Install dependencies.
 RUN mkdir -p "$BUILD_DIR" \
@@ -27,6 +28,7 @@ RUN mkdir -p "$BUILD_DIR" \
         libsm6 \
         libxrender1 \
         libfontconfig1 \
+        supervisor \
         g++-6 \
         gcc-6 \
         $([ "$CUDA_VERSION" = 'none' ] && echo -n "" || echo -n "$CUDA_DEPS") \
@@ -65,12 +67,10 @@ RUN git clone "https://github.com/opencv/opencv.git" "$BUILD_DIR/opencv" \
     && make install \
     && ldconfig
 
-# Confirm opencv is working with python.
-COPY ./scripts/print_cv2_info.py "$BUILD_DIR"
-RUN python "$BUILD_DIR/print_cv2_info.py" && python3 "$BUILD_DIR/print_cv2_info.py"
-
-# Install remaining python dependencies that rely on opencv.
-RUN pip install face_recognition
+# Install mlapi
+RUN git clone "https://github.com/pliablepixels/mlapi.git" \
+    && cd mlapi \
+    && pip3 install -r requirements.txt
 
 # Install zmeventnotification.
 RUN git clone "https://github.com/pliablepixels/zmeventnotification.git" \
@@ -85,3 +85,18 @@ RUN git clone "https://github.com/pliablepixels/zmeventnotification.git" \
 RUN apt-get --assume-yes remove $BUILD_DEPS \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf "$BUILD_DIR"
+
+COPY docker/ /
+COPY test/ "$TEST_DIR"
+
+# Test mlapi
+RUN supervisord --configuration /etc/supervisor/supervisor.conf \
+    && sleep 10 \
+    && /zmeventnotification/hook/zm_detect.py \
+        --config /etc/zm/zmeventnotification.ini \
+        --file "$TEST_DIR/snapshot.jpg" \
+        --output-path "$TEST_DIR" | grep "detected:car" \
+    && rm -rf "$TEST_DIR"
+
+ENTRYPOINT "/bin/sh -c"
+CMD supervisord --nodaemon --configuration /etc/supervisor/supervisor.conf

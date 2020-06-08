@@ -5,6 +5,8 @@ A docker container prebuilt for zoneminder and zmeventnotification that supports
 
 - Built from official zoneminder docker image.
 - Custom OpenCV build.
+- Full install of zmeventnotification.
+- Full install of mlapi (for faster image detection).
 - CPU and Nvidia GPU support. [Full tag list here](https://hub.docker.com/repository/docker/vangorra/zoneminder-zmeventnotification/tags).
   - Is your CUDA version not listed in the docker tags? File and issue requesting the version or submit a PR that adjusts the matrix of `.github/workflows/build.yml`.
 
@@ -25,6 +27,7 @@ services:
       - './container_data/zoneminder/images:/var/cache/zoneminder/images'
       - './container_data/zoneminder/mysql:/var/lib/mysql'
       - './container_data/zoneminder/logs:/var/log/zm'
+      - './container_data/zoneminder/zmeventnotification/config/mlapi.ini:/etc/zm/mlapi.ini:ro'
       - './container_data/zoneminder/zmeventnotification/config/zmeventnotification.ini:/etc/zm/zmeventnotification.ini:ro'
       - './container_data/zoneminder/zmeventnotification/config/objectconfig.ini:/etc/zm/objectconfig.ini:ro'
       - './container_data/zoneminder/zmeventnotification/config/secrets.ini:/etc/zm/secrets.ini:ro'
