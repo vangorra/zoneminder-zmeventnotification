@@ -1,6 +1,6 @@
 FROM zoneminderhq/zoneminder:latest-ubuntu18.04
 ARG CUDA_VERSION="none"
-ARG BUILD_DEPS="curl wget git build-essential cmake python-dev python3-dev python3-pip libopenblas-dev liblapack-dev libblas-dev libsm-dev zlib1g-dev libjpeg8-dev libtiff5-dev libpng-dev"
+ARG BUILD_DEPS="wget git build-essential cmake python-dev python3-dev python3-pip libopenblas-dev liblapack-dev libblas-dev libsm-dev zlib1g-dev libjpeg8-dev libtiff5-dev libpng-dev"
 ARG CUDA_DEPS="nvidia-cuda-toolkit nvidia-cuda-dev"
 ARG BUILD_DIR="/tmp/build"
 ARG TEST_DIR="/tmp/test"
@@ -9,6 +9,7 @@ ARG TEST_DIR="/tmp/test"
 RUN mkdir -p "$BUILD_DIR" \
     && apt-get update \
     && apt-get --assume-yes install \
+        curl \
         sudo \
         libcrypt-mysql-perl \
         libcrypt-eksblowfish-perl \
@@ -92,11 +93,13 @@ COPY test/ "$TEST_DIR"
 # Test mlapi
 RUN supervisord --configuration /etc/supervisor/supervisor.conf \
     && sleep 10 \
+    && echo "Testing zoneminder is responsive." \
+    && curl --fail http://localhost/zm/ \
+    && echo "Testing mlapi works with zm_detect." \
     && /zmeventnotification/hook/zm_detect.py \
         --config /etc/zm/zmeventnotification.ini \
         --file "$TEST_DIR/snapshot.jpg" \
         --output-path "$TEST_DIR" | grep "detected:car" \
     && rm -rf "$TEST_DIR"
 
-ENTRYPOINT "/bin/sh -c"
-CMD supervisord --nodaemon --configuration /etc/supervisor/supervisor.conf
+ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/supervisor.conf"]
