@@ -10,6 +10,7 @@ RUN mkdir -p "$BUILD_DIR" \
     && apt-get update \
     && apt-get --assume-yes install \
         curl \
+        jq \
         sudo \
         libcrypt-mysql-perl \
         libcrypt-eksblowfish-perl \
@@ -90,16 +91,7 @@ RUN apt-get --assume-yes remove $BUILD_DEPS \
 COPY docker/ /
 COPY test/ "$TEST_DIR"
 
-# Test mlapi
-RUN supervisord --configuration /etc/supervisor/supervisor.conf \
-    && sleep 10 \
-    && echo "Testing zoneminder is responsive." \
-    && curl --fail http://localhost/zm/ \
-    && echo "Testing mlapi works with zm_detect." \
-    && /zmeventnotification/hook/zm_detect.py \
-        --config /etc/zm/zmeventnotification.ini \
-        --file "$TEST_DIR/snapshot.jpg" \
-        --output-path "$TEST_DIR" | grep "detected:car" \
-    && rm -rf "$TEST_DIR"
+# Test services
+RUN "$TEST_DIR/test.sh" && rm -rf "$TEST_DIR"
 
 ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/supervisor.conf"]
