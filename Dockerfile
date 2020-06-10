@@ -93,8 +93,6 @@ COPY test/ "$TEST_DIR"
 
 # Test services
 RUN "$TEST_DIR/test.sh" \
-    && rm -rf "$TEST_DIR" \
-    && apachectl -k stop \
-    && mysqld stop
+    && rm -rf "$TEST_DIR"
 
 ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/supervisor.conf"]

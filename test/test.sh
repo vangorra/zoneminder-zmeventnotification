@@ -40,5 +40,12 @@ echo "$RAW_RESULT"
 echo "$RAW_RESULT" | jq '.[].label' | grep car
 
 echo ""
-echo "Stopping supervisor."
+echo "Stopping zoneminder."
+zmpkg.pl stop
+echo "Stopping apache."
+apachectl -k stop
+#echo "Stopping mysql."
+#mysqld stop
+echo "Stopping supervisord."
 supervisorctl stop all
+
