@@ -1,9 +1,12 @@
 FROM zoneminderhq/zoneminder:latest-ubuntu18.04
 ARG CUDA_VERSION="none"
 ARG BUILD_DEPS="wget git build-essential cmake python-dev python3-dev python3-pip libopenblas-dev liblapack-dev libblas-dev libsm-dev zlib1g-dev libjpeg8-dev libtiff5-dev libpng-dev"
-ARG CUDA_DEPS="nvidia-cuda-toolkit nvidia-cuda-dev"
+ARG CUDA_DEPS="nvidia-cuda-toolkit nvidia-cuda-dev libcudnn7 libcudnn7-dev"
 ARG BUILD_DIR="/tmp/build"
 ARG TEST_DIR="/tmp/test"
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F60F4B3D7FA2AF80 \
+    && echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
 
 # Install dependencies.
 RUN mkdir -p "$BUILD_DIR" \
