@@ -47,28 +47,32 @@ RUN mkdir -p "$BUILD_DIR" \
     && perl -MCPAN -e "install Net::MQTT::Simple"
 
 # Build opencv
-RUN git clone "https://github.com/opencv/opencv.git" "$BUILD_DIR/opencv" \
-    && cd "$BUILD_DIR/opencv" && git checkout 4.3.0 \
-    && cd "$BUILD_DIR" \
-    && git clone "https://github.com/opencv/opencv_contrib.git" "$BUILD_DIR/opencv_contrib" \
-    && cd "$BUILD_DIR/opencv_contrib" && git checkout 4.3.0 \
+RUN cd "$BUILD_DIR" \
+    && curl --fail --location --output opencv.zip "https://github.com/opencv/opencv/archive/4.2.0.zip" \
+    && unzip opencv.zip \
+    && mv opencv-4.2.0 opencv \
+    && curl --fail --location --output opencv_contrib.zip "https://github.com/opencv/opencv_contrib/archive/4.2.0.zip" \
+    && unzip opencv_contrib.zip \
+    && mv opencv_contrib-4.2.0 opencv_contrib \
     && mkdir -p "$BUILD_DIR/opencv/build" \
     && cd "$BUILD_DIR/opencv/build" \
     && CC=gcc-6 CXX=g++-6 cmake \
-        -DCMAKE_BUILD_TYPE=RELEASE \
-       	-DCMAKE_INSTALL_PREFIX=/usr/local \
-       	-DOPENCV_EXTRA_MODULES_PATH="$BUILD_DIR/opencv_contrib/modules" \
-       	-DINSTALL_C_EXAMPLES=OFF \
-       	-DOPENCV_ENABLE_NONFREE=ON \
-       	-DWITH_CUDA=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
-       	-DWITH_CUDNN=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
-       	-DOPENCV_DNN_CUDA=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
-       	-DENABLE_FAST_MATH=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
-       	-DCUDA_FAST_MATH=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
-       	-DWITH_CUBLAS=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
-       	-DCUDA_ARCH_BIN=$CUDA_VERSION \
-       	-DBUILD_opencv_python2=ON \
-       	-DBUILD_opencv_python3=ON \
+        -D CMAKE_BUILD_TYPE=RELEASE \
+       	-D CMAKE_INSTALL_PREFIX=/usr/local \
+        -D INSTALL_PYTHON_EXAMPLES=ON \
+        -D INSTALL_C_EXAMPLES=OFF \
+        -D OPENCV_ENABLE_NONFREE=ON \
+       	-D WITH_CUDA=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
+       	-D WITH_CUDNN=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
+       	-D OPENCV_DNN_CUDA=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
+       	-D ENABLE_FAST_MATH=1 \
+        -D CUDA_FAST_MATH=$([ "$CUDA_VERSION" = "none" ] && echo "0" || echo "1") \
+       	-D CUDA_ARCH_BIN=$CUDA_VERSION \
+       	-D CUDA_ARCH=$CUDA_VERSION \
+       	-D WITH_CUBLAS=$([ "$CUDA_VERSION" = "none" ] && echo "OFF" || echo "ON") \
+       	-D OPENCV_EXTRA_MODULES_PATH="$BUILD_DIR/opencv_contrib/modules" \
+       	-D BUILD_opencv_python2=ON \
+       	-D BUILD_opencv_python3=ON \
        	.. \
     && echo "Starting make with $(grep -cE '^processor\s+:\s+[0-9]+' /proc/cpuinfo) theads." \
     && make -j$(grep -cE '^processor\s+:\s+[0-9]+' /proc/cpuinfo) \
