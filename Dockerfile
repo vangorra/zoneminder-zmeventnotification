@@ -48,7 +48,10 @@ RUN mkdir -p "$BUILD_DIR" \
 
 # Build opencv
 RUN git clone "https://github.com/opencv/opencv.git" "$BUILD_DIR/opencv" \
+    && cd "$BUILD_DIR/opencv" && git checkout 4.3.0 \
+    && cd "$BUILD_DIR" \
     && git clone "https://github.com/opencv/opencv_contrib.git" "$BUILD_DIR/opencv_contrib" \
+    && cd "$BUILD_DIR/opencv_contrib" && git checkout 4.3.0 \
     && mkdir -p "$BUILD_DIR/opencv/build" \
     && cd "$BUILD_DIR/opencv/build" \
     && CC=gcc-6 CXX=g++-6 cmake \
